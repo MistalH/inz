@@ -34,11 +34,16 @@ class SzczytForm(forms.ModelForm):
 
 class DodajSzczytForm(forms.Form):
     wybierz_szczyt = forms.ModelChoiceField(queryset=Szczyt.objects.all(), label="Wybierz Szczyt")
-
+    
+from django.forms.widgets import DateTimeInput
 class WyprawaForm(forms.ModelForm):
     class Meta:
         model = Wyprawa
         fields = ['nazwa_szczytu', 'godzina_wyjscia', 'godzina_zakonczenia', 'ukonczona']
+        widgets = {
+            'godzina_wyjscia': DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
+            'godzina_zakonczenia': DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
+        }
 class ZgloszenieForm(forms.ModelForm):
     class Meta:
         model = Zgloszenie

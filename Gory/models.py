@@ -54,12 +54,20 @@ class Zgloszenie(models.Model):
     potrzebuje_pomocy = models.BooleanField(default=False)
     wyruszyl_na_pomoc = models.BooleanField(default=False)
     oddzial_ratowniczy = models.ForeignKey(OddzialRatowniczy, on_delete=models.SET_NULL, null=True, blank=True)
+    historia_oddzialow = models.ManyToManyField(OddzialRatowniczy, related_name='historia_zgloszen', blank=True)
+
     def __str__(self):
-     if self.user:
-        return f"Zgłoszenie użytkownika {self.user.username} na trasie {self.trasa.nazwa}"
-     else:
-        return f"Zgłoszenie bez przypisanego użytkownika na trasie {self.trasa.nazwa}"
+        if self.user:
+            return f"Zgłoszenie użytkownika {self.user.username} na trasie {self.trasa.nazwa}"
+        else:
+            return f"Zgłoszenie bez przypisanego użytkownika na trasie {self.trasa.nazwa}"
     
     class Meta:
         ordering = ['-godzina_wyruszenia']
+        
+from django.shortcuts import render
+def szczegoly_zgloszenia(request, zgloszenie_id):
+    zgloszenie = Zgloszenie.objects.get(pk=zgloszenie_id)
+    wszystkie_oddzialy = OddzialRatowniczy.objects.all()
 
+    return render(request, 'szablon.html', {'zgloszenie': zgloszenie, 'wszystkie_oddzialy': wszystkie_oddzialy})

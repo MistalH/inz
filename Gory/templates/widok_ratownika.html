@@ -221,6 +221,7 @@ input[type="submit"]:hover {
         }
     </style>
 </head>
+
 </head>
 <body>
     <header>
@@ -257,6 +258,7 @@ input[type="submit"]:hover {
                 <th>Potrzebuje pomocy</th>
                 <th>Przydzielony oddział</th>
                 <th>Akcja</th>
+                <th>Jaki Oddział na Akcji</th>
             </tr>
         </thead>
         <tbody>
@@ -267,6 +269,7 @@ input[type="submit"]:hover {
                     <td>{{ zgloszenie.trasa.nazwa }}</td>
                     <td>{{ zgloszenie.godzina_wyruszenia }}</td>
                     <td>{{ zgloszenie.potrzebuje_pomocy }}</td>
+                    
                     <td>
                         <form method="post" class="submit-form" data-zgloszenie-id="{{ zgloszenie.id }}">
                             {% csrf_token %}
@@ -280,11 +283,25 @@ input[type="submit"]:hover {
                             <button class="submit-button" type="submit">Zatwierdź zmiany</button>
                         </form>
                     </td>
+                    
                     <td>
                         <button class="action-button" data-zgloszenie-id="{{ zgloszenie.id }}" data-ukonczone="false">
                             Oznacz jako Ukończone
                         </button>
                     </td>
+                    
+                    <td>
+                        {% if zgloszenie.historia_oddzialow.all %}
+                            <ul>
+                                {% for oddzial in zgloszenie.historia_oddzialow.all %}
+                                    <li>{{ oddzial.nazwa }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            Brak historii oddziałów
+                        {% endif %}
+                    </td>
+                    <!-- Dodana kolumna dla historii oddziałów -->
                 </tr>
             {% empty %}
                 <tr>
@@ -293,7 +310,6 @@ input[type="submit"]:hover {
             {% endfor %}
         </tbody>
     </table>
-<!-- Pozostały kod HTML tutaj -->
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {

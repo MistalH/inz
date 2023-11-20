@@ -13,27 +13,33 @@
             margin: 0;
             padding: 0;
         }
+
         h1 {
             text-align: center;
             color: #fff;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             padding: 20px;
         }
+
         form {
             background: rgba(255, 255, 255, 0.8);
             padding: 20px;
             border-radius: 10px;
             margin: 0 auto;
             width: 50%;
+            animation: bounceInDown 1s; /* Dodanie animacji */
         }
+
         .form-group {
             margin: 10px 0;
         }
+
         label {
             display: block;
             font-weight: bold;
             color: #333;
         }
+
         input[type="text"],
         select {
             width: 100%;
@@ -41,10 +47,12 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
         input[type="text"]:focus,
         select:focus {
             border-color: #007BFF;
         }
+
         button {
             background: #007BFF;
             color: #fff;
@@ -54,9 +62,11 @@
             cursor: pointer;
             margin-top: 10px;
         }
+
         button:hover {
             background: #0056b3;
         }
+
         header {
             background-color: #130D29;
             color: #fff;
@@ -82,8 +92,19 @@
         ul li:last-child {
             margin-right: 0;
         }
+
+        /* Dodanie animacji opadania formularza */
+        @keyframes bounceInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
-    
 </head>
 <body>
     <header>
@@ -114,7 +135,6 @@
     <body>
         <h1>Zgłoszenie potrzeby pomocy</h1>
         {% if user.is_authenticated %}
-            <p>Zalogowany użytkownik: {{ user.username }}</p>
         {% endif %}
         <form method="post">
             {% csrf_token %}
@@ -126,7 +146,7 @@
                 <label for="{{ form.godzina_wyruszenia.id_for_label }}">Godzina wyruszenia:</label>
                 {{ form.godzina_wyruszenia }}
             </div>
-            <div class "form-group">
+            <div class="form-group">
                 <label for="{{ form.potrzebuje_pomocy.id_for_label }}">Potrzebuję pomocy:</label>
                 {{ form.potrzebuje_pomocy }}
             </div>
