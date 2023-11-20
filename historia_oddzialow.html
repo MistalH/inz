@@ -1,0 +1,21 @@
+<!-- historia_oddzialow.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Historia oddziałów dla zgłoszenia</title>
+</head>
+<body>
+    <h1>Historia oddziałów dla zgłoszenia nr {{ zgloszenie.id }}</h1>
+
+    {% if historia_oddzialow %}
+        <ul>
+            {% for oddzial in historia_oddzialow %}
+                <li>{{ oddzial.nazwa }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Brak historii oddziałów dla tego zgłoszenia.</p>
+    {% endif %}
+</body>
+</html>
