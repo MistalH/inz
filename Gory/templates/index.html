@@ -182,7 +182,8 @@
                 <li><a href="#">Akcje Ratunkowe</a></li>
                 <li><a href="#">Galeria</a></li>
                 <li><a href="#">Kontakt</a></li>
-                <li><a href="#">Wsparcie</a></li>
+                <li><a href="{% url 'zgloszenie' %}">Zgłoś Pomoc</a></li>
+                <li><a href="{% url 'lista_wypraw' %}">Lista Wypraw</a></li>
                 <li><a href="trasa">Trasy</a></li>
                 {% if user.is_authenticated %}
                 <li><a href="{% url 'logout' %}">Wyloguj</a></li>
