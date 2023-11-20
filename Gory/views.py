@@ -255,6 +255,7 @@ def zgloszenie_wyruszenia_oddzialu(request):
             zgloszenie.wyruszyl_na_pomoc = True
             zgloszenie.save()
 
+            
             # Wysyłanie e-maila po wyruszeniu oddziału
             if zgloszenie.oddzial_ratowniczy:
                 subject = 'Wyruszenie Oddziału Ratunkowego'
@@ -264,29 +265,48 @@ def zgloszenie_wyruszenia_oddzialu(request):
 
                 send_mail(subject, message, from_email, recipient_list, fail_silently=False)
 
-            return redirect('lista_zgloszen')  # Zmień 'lista_zgloszen' na nazwę odpowiedniej ścieżki URL
+            return redirect('lista_zgloszen')  # Przekierowanie do odpowiedniego widoku
     else:
         form = WyruszenieOddzialuForm()
 
     return render(request, 'zgloszenie_wyruszenia_oddzialu.html', {'form': form})
 
+
 from django.http import JsonResponse
+
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from .models import Zgloszenie, OddzialRatowniczy
 
 def przydziel_oddzial_ratunkowy(request):
     if request.method == 'POST':
         zgloszenie_id = request.POST.get('zgloszenie_id')
         oddzial_id = request.POST.get('oddzial_ratunkowy')
 
-        try:
-            zgloszenie = Zgloszenie.objects.get(id=zgloszenie_id)
-            oddzial = OddzialRatowniczy.objects.get(id=oddzial_id)
+        if zgloszenie_id and oddzial_id:
+            try:
+                zgloszenie = get_object_or_404(Zgloszenie, pk=zgloszenie_id)
+                oddzial = get_object_or_404(OddzialRatowniczy, pk=oddzial_id)
 
-            zgloszenie.oddzial_ratowniczy = oddzial
-            zgloszenie.save()
+                # Przypisanie wybranego oddziału do zgłoszenia
+                zgloszenie.oddzial_ratowniczy = oddzial
+                zgloszenie.save()
 
-            return JsonResponse({'status': 'success', 'oddzial': oddzial.nazwa})
+                # Dodanie wybranego oddziału do historii zgłoszenia
+                zgloszenie.historia_oddzialow.add(oddzial)
 
-        except (Zgloszenie.DoesNotExist, OddzialRatowniczy.DoesNotExist):
-            return JsonResponse({'status': 'error', 'message': 'Nieprawidłowe zgłoszenie lub oddział.'})
+                return JsonResponse({'status': 'success', 'oddzial': oddzial.nazwa})
+
+            except (Zgloszenie.DoesNotExist, OddzialRatowniczy.DoesNotExist):
+                return JsonResponse({'status': 'error', 'message': 'Nieprawidłowe zgłoszenie lub oddział.'})
 
     return JsonResponse({'status': 'error', 'message': 'Nieprawidłowe żądanie.'})
+from django.shortcuts import render, get_object_or_404
+from Gory.models import Zgloszenie
+
+
+def historia_oddzialow(request, zgloszenie_id):
+    zgloszenie = get_object_or_404(Zgloszenie, pk=zgloszenie_id)
+    historia_oddzialow = zgloszenie.historia_oddzialow.all()
+
+    return render(request, 'historia_oddzialow.html', {'zgloszenie': zgloszenie, 'historia_oddzialow': historia_oddzialow})

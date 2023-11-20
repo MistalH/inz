@@ -21,6 +21,8 @@ urlpatterns = [
     path('widok_ratownika/', views.widok_ratownika, name='widok_ratownika'),
     path('widok_ratownika/<int:zgloszenie_id>/', views.widok_ratownika, name='widok_ratownika'),
     path('przydziel_oddzial_ratunkowy/', views.przydziel_oddzial_ratunkowy, name='przydziel_oddzial_ratunkowy'),
+    path('historia-oddzialow/<int:zgloszenie_id>/', views.historia_oddzialow, name='historia_oddzialow'),
+
 
 
     
