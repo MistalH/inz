@@ -156,6 +156,11 @@ def zgloszenie(request):
         if form.is_valid():
             zgloszenie = form.save(commit=False)
             zgloszenie.user = request.user
+            
+            oddzial_id = request.POST.get('oddzial_ratowniczy')  # Pobranie przypisanego oddziału z formularza
+            if oddzial_id:
+                oddzial = OddzialRatowniczy.objects.get(pk=oddzial_id)
+                zgloszenie.oddzial_ratowniczy = oddzial  # Przypisanie oddziału do zgłoszenia
             zgloszenie.save()
 
             # Logika wysyłania e-maila
@@ -166,6 +171,17 @@ def zgloszenie(request):
 
             send_mail(subject, message, from_email, recipient_list, fail_silently=False)
 
+            # Przypisanie oddziału ratowniczego do zgłoszenia
+            oddzial_id = request.POST.get('oddzial_ratowniczy')
+            if oddzial_id:
+                oddzial = OddzialRatowniczy.objects.get(pk=oddzial_id)
+                zgloszenie.oddzial_ratowniczy = oddzial
+                zgloszenie.save()
+
+                messages.success(request, 'Zgłoszenie zostało pomyślnie zapisane z przypisanym oddziałem.')
+            else:
+                messages.warning(request, 'Zgłoszenie zostało zapisane, ale brakuje przypisanego oddziału.')
+
             print("E-mail został wysłany pomyślnie.")
         else:
             print(form.errors)
@@ -173,7 +189,6 @@ def zgloszenie(request):
         form = ZgloszenieForm()
 
     return render(request, 'zgloszenie.html', {'form': form})
-
 
 from .forms import PrzydzielOddzialRatunkowyForm
 
@@ -277,30 +292,29 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from .models import Zgloszenie, OddzialRatowniczy
-
 def przydziel_oddzial_ratunkowy(request):
     if request.method == 'POST':
         zgloszenie_id = request.POST.get('zgloszenie_id')
-        oddzial_id = request.POST.get('oddzial_ratunkowy')
+        oddzial_ids = request.POST.getlist('oddzial_ratunkowy')  # Pobierz listę przypisanych identyfikatorów oddziałów
 
-        if zgloszenie_id and oddzial_id:
+        if zgloszenie_id and oddzial_ids:
             try:
                 zgloszenie = get_object_or_404(Zgloszenie, pk=zgloszenie_id)
-                oddzial = get_object_or_404(OddzialRatowniczy, pk=oddzial_id)
+                oddzialy = OddzialRatowniczy.objects.filter(id__in=oddzial_ids)  # Pobierz obiekty oddziałów na podstawie identyfikatorów
 
-                # Przypisanie wybranego oddziału do zgłoszenia
-                zgloszenie.oddzial_ratowniczy = oddzial
-                zgloszenie.save()
+                # Przypisanie wybranych oddziałów do zgłoszenia
+                for oddzial in oddzialy:
+                    zgloszenie.historia_oddzialow.add(oddzial)
 
-                # Dodanie wybranego oddziału do historii zgłoszenia
-                zgloszenie.historia_oddzialow.add(oddzial)
+                return JsonResponse({'status': 'success', 'oddzialy': [oddzial.nazwa for oddzial in oddzialy]})
 
-                return JsonResponse({'status': 'success', 'oddzial': oddzial.nazwa})
-
-            except (Zgloszenie.DoesNotExist, OddzialRatowniczy.DoesNotExist):
-                return JsonResponse({'status': 'error', 'message': 'Nieprawidłowe zgłoszenie lub oddział.'})
+            except Zgloszenie.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'Nieprawidłowe zgłoszenie.'})
+            except OddzialRatowniczy.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'Nieprawidłowy oddział.'})
 
     return JsonResponse({'status': 'error', 'message': 'Nieprawidłowe żądanie.'})
+
 from django.shortcuts import render, get_object_or_404
 from Gory.models import Zgloszenie
 
@@ -310,3 +324,5 @@ def historia_oddzialow(request, zgloszenie_id):
     historia_oddzialow = zgloszenie.historia_oddzialow.all()
 
     return render(request, 'historia_oddzialow.html', {'zgloszenie': zgloszenie, 'historia_oddzialow': historia_oddzialow})
+
+
