@@ -1,4 +1,3 @@
-<!-- historia_oddzialow.html -->
 
 <!DOCTYPE html>
 <html>
@@ -8,14 +7,16 @@
 <body>
     <h1>Historia oddziałów dla zgłoszenia nr {{ zgloszenie.id }}</h1>
 
-    {% if historia_oddzialow %}
-        <ul>
-            {% for oddzial in historia_oddzialow %}
-                <li>{{ oddzial.nazwa }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Brak historii oddziałów dla tego zgłoszenia.</p>
-    {% endif %}
+    <td>
+        {% if zgloszenie.historia_oddzialow.exists %}
+            <ul>
+                {% for oddzial in zgloszenie.historia_oddzialow.all %}
+                    <li>{{ oddzial.nazwa }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            Brak przydzielonych oddziałów
+        {% endif %}
+    </td>
 </body>
 </html>

@@ -46,10 +46,14 @@ class OddzialRatowniczy(models.Model):
     nazwa = models.CharField(max_length=100)
     kontakt = models.CharField(max_length=100)
     dostepnosc = models.BooleanField(default=True)
+    przypisane_zgloszenia = models.ManyToManyField('Zgloszenie', related_name='przypisane_oddzialy', blank=True)
+
+    def __str__(self):
+        return self.nazwa
 
 class Zgloszenie(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='zgloszenia')
-    trasa = models.ForeignKey(Trasa, on_delete=models.CASCADE)
+    trasa = models.ForeignKey('Trasa', on_delete=models.CASCADE)
     godzina_wyruszenia = models.DateTimeField()
     potrzebuje_pomocy = models.BooleanField(default=False)
     wyruszyl_na_pomoc = models.BooleanField(default=False)
@@ -61,13 +65,6 @@ class Zgloszenie(models.Model):
             return f"Zgłoszenie użytkownika {self.user.username} na trasie {self.trasa.nazwa}"
         else:
             return f"Zgłoszenie bez przypisanego użytkownika na trasie {self.trasa.nazwa}"
-    
+
     class Meta:
         ordering = ['-godzina_wyruszenia']
-        
-from django.shortcuts import render
-def szczegoly_zgloszenia(request, zgloszenie_id):
-    zgloszenie = Zgloszenie.objects.get(pk=zgloszenie_id)
-    wszystkie_oddzialy = OddzialRatowniczy.objects.all()
-
-    return render(request, 'szablon.html', {'zgloszenie': zgloszenie, 'wszystkie_oddzialy': wszystkie_oddzialy})

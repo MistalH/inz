@@ -70,16 +70,22 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
 
-        form {
-            text-align: center;
-            margin: 20px auto;
-            max-width: 300px;
-        }
+       form {
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+    border: 2px solid #4e387e;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
 
         label {
             font-weight: bold;
             display: block;
             margin-bottom: 10px;
+            
         }
 
         select {
@@ -125,6 +131,55 @@
         .user-menu p {
             margin: 0;
         }
+        .informacje-o-szlaku {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+        }
+
+        .informacje-o-szlaku h2 {
+            color: #130D29;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .informacje-o-szlaku p {
+            color: #333;
+            margin: 5px 0;
+        }
+
+        /* Styl dla sekcji z mapą */
+        .mapa {
+            max-width: 600px;
+            overflow: hidden;
+            margin: 0 auto;
+            min-width: 300px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+        }
+
+        .mapa iframe {
+            width: 100%;
+            border: 0;
+        }
+
+        .mapa a {
+            color: #999;
+            padding: 7px 0;
+            font-size: 13px;
+            font-family: Roboto, Arial, sans-serif;
+            display: inline-block;
+        }
+        .informacje-o-szlaku h2 {
+    font-size: 22px;
+    color: #130D29;
+    margin-bottom: 8px;
+}
+
     </style>
 </head>
 <body>
@@ -197,26 +252,25 @@
             
         </form>
         
-
         {% if trasa %}
-        {% if trasa.nazwa == "Rysy" %}
-
-    {% endif %}
-            <h2>Informacje o Wybranym Szlaku: {{ trasa.nazwa }}</h2>
-            <p>Czas Trwania: {{ trasa.czas_trwania }} Godzin</p>
-            <p>Schroniska: {{ trasa.schroniska }}</p>
-            <p>Notatka o Szycie: {{ trasa.notatka_o_szycie }}</p>
-            <p>Wysokość Szczytu: {{ trasa.wysokosc_szczytu }} m n.p.m.</p>
-            <p>Kolor Szlaku: {{ trasa.kolor_szlaku }}</p>
-            <p>Pasmo Górskie: {{ trasa.pasmo_gorskie }}</p>
+            <!-- To jest informacja o wybranym szlaku -->
+            <div class="informacje-o-szlaku">
+                <h2>Informacje o Wybranym Szlaku: {{ trasa.nazwa }}</h2>
+                <p>Czas Trwania: {{ trasa.czas_trwania }} Godzin</p>
+                <p>Schroniska: {{ trasa.schroniska }}</p>
+                <p>Notatka o Szycie: {{ trasa.notatka_o_szycie }}</p>
+                <p>Wysokość Szczytu: {{ trasa.wysokosc_szczytu }} m n.p.m.</p>
+                <p>Kolor Szlaku: {{ trasa.kolor_szlaku }}</p>
+                <p>Pasmo Górskie: {{ trasa.pasmo_gorskie }}</p>
+            </div>
+            
+            {% if trasa.nazwa == "Rysy" %}
+                <div class="mapa">
+                    <iframe src="https://mapa-turystyczna.pl/map/widget/route/h1l0p1/3kr6d.html" height="680" style="width:100%;border:0;" loading="lazy"></iframe>
+                    <a href="https://mapa-turystyczna.pl/route/3kr6d?utm_source=external_web&amp;utm_medium=widget&amp;utm_campaign=route_widget" target="_blank" rel="noopener">Trasa: Palenica Białczańska – Rysy | mapa-turystyczna.pl</a>
+                </div>
+            {% endif %}
         {% endif %}
-        
     </div>
-{% if trasa.nazwa == "Rysy" %}
-        <div style="max-width:600px;overflow:hidden;margin:0 auto;min-width:300px;">
-            <iframe src="https://mapa-turystyczna.pl/map/widget/route/h1l0p1/3kr6d.html" height="680" style="width:100%;border:0;" loading="lazy"></iframe>
-            <a href="https://mapa-turystyczna.pl/route/3kr6d?utm_source=external_web&amp;utm_medium=widget&amp;utm_campaign=route_widget" target="_blank" rel="noopener" style="color:#999;padding:7px 0;font-size: 13px;font-family:Roboto,Arial,sans-serif;display: inline-block;">Trasa: Palenica Białczańska – Rysy | mapa-turystyczna.pl</a>
-        </div>
-    {% endif %}
 </body>
 </html>
